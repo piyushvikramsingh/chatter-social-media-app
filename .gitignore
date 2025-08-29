@@ -1,0 +1,107 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archives - Keep important project files, ignore other zip files
+*.tar.gz
+*.rar
+
+# Keep important project zip files
+!Documentation.zip
+!chatter_backend.zip
+!chatter_flutter.zip
+
+# Database files (keep the working SQLite and demo database)
+*.sql
+!chatter_database.sql
+
+# Keep demo/test files that are part of the project
+# chatter_demo_website.html is kept
+
+# Laravel Backend - Ignore build artifacts and dependencies
+chatter_backend/vendor/
+chatter_backend/node_modules/
+chatter_backend/public/hot
+chatter_backend/public/storage
+chatter_backend/storage/*.key
+chatter_backend/.env
+chatter_backend/.env.backup
+chatter_backend/.phpunit.result.cache
+chatter_backend/Homestead.json
+chatter_backend/Homestead.yaml
+chatter_backend/npm-debug.log
+chatter_backend/yarn-error.log
+
+# Flutter - Ignore build artifacts and dependencies
+chatter/**/doc/api/
+chatter/**/ios/Flutter/.last_build_id
+chatter/**/.dart_tool/
+chatter/**/.flutter-plugins
+chatter/**/.flutter-plugins-dependencies
+chatter/**/.packages
+chatter/**/build/
+chatter/ios/Podfile.lock
+chatter/ios/.symlinks/
+chatter/ios/Flutter/App.framework
+chatter/ios/Flutter/Flutter.framework
+chatter/ios/Flutter/Flutter.podspec
+chatter/ios/Flutter/Generated.xcconfig
+chatter/ios/Flutter/app.flx
+chatter/ios/Flutter/app.zip
+chatter/ios/Flutter/flutter_assets/
+chatter/ios/ServiceDefinitions.json
+chatter/ios/Runner/GeneratedPluginRegistrant.*
+
+# Android
+chatter/android/.gradle
+chatter/android/captures/
+chatter/android/gradlew
+chatter/android/gradlew.bat
+chatter/android/local.properties
+chatter/android/**/GeneratedPluginRegistrant.java
+chatter/android/key.properties
+chatter/android/.project
+chatter/android/.settings/
+chatter/android/app/debug
+chatter/android/app/profile
+chatter/android/app/release
+
+# Keep important APK files but ignore intermediate builds
+!chatter/build/app/outputs/flutter-apk/app-release.apk
+!chatter/build/app/outputs/flutter-apk/app-debug.apk
+chatter/build/
+!chatter/build/app/
+!chatter/build/app/outputs/
+!chatter/build/app/outputs/flutter-apk/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Misc
+*.log
+*.tmp
+
+# Credentials and sensitive files
+**/google-services.json
+**/GoogleService-Info.plist
+**/*credentials*.json
+**/*secrets*.json
+chatter/lib/supabase_credentials.dart
+
+# Keep important documentation and config
+!AWS_DEPLOYMENT_GUIDE.md
+!PRODUCTION_READINESS_CHECKLIST.md
+!IMPLEMENTATION_STATUS.md
+!SUPABASE_CONFIGURATION.md
+!test_admin_login.php
+!production_test.php
+!README.md
