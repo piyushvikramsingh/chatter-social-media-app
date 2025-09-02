@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # Laravel Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: chatter-backend
+    ports:
+      - "8003:80"
+    volumes:
+      - backend_storage:/var/www/html/storage
+      - backend_database:/var/www/html/database
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - API_KEY=123
+    networks:
+      - chatter-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/fetchSetting"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Flutter Frontend (Web)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: chatter-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=http://backend:80
+    networks:
+      - chatter-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # Database Management (phpMyAdmin-like for SQLite)
+  database-manager:
+    image: coleifer/sqlite-web
+    container_name: chatter-db-manager
+    ports:
+      - "8080:8080"
+    volumes:
+      - backend_database:/data
+    command: ["sqlite_web", "/data/database.sqlite", "--host", "0.0.0.0", "--port", "8080"]
+    depends_on:
+      - backend
+    networks:
+      - chatter-network
+
+  # Nginx Reverse Proxy (Optional - for production)
+  nginx:
+    image: nginx:alpine
+    container_name: chatter-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - chatter-network
+    profiles:
+      - production
+
+volumes:
+  backend_storage:
+    driver: local
+  backend_database:
+    driver: local
+
+networks:
+  chatter-network:
+    driver: bridge

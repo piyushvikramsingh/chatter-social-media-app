@@ -61,61 +61,105 @@ chatter-ultimate-social/
 
 ## 🚦 Getting Started
 
-### Prerequisites
-- **Flutter SDK** (3.0+)
-- **PHP** (8.0+)
-- **Composer**
-- **Node.js** (for Laravel Mix)
-- **Android Studio** / **Xcode**
+### 🚀 Quick Start (Automated Setup)
 
-### 🔧 Backend Setup
+**One-command setup for the entire application:**
 
-1. **Navigate to backend directory:**
-   ```bash
-   cd chatter_backend
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/piyushvikramsingh/chatter-social-media-app.git
+cd chatter-social-media-app
 
-2. **Install dependencies:**
-   ```bash
-   composer install
-   npm install
-   ```
+# Run automated setup
+./setup.sh
+```
 
-3. **Start the server:**
-   ```bash
-   php artisan serve --host=127.0.0.1 --port=8003
-   ```
+**Platform-specific setup:**
+- **Linux/macOS**: `./setup.sh`
+- **macOS with Homebrew**: `./setup-macos.sh`
+- **Windows**: `setup-windows.bat`
 
-4. **Access admin panel:**
-   - URL: `http://127.0.0.1:8003`
-   - Username: `admin`
-   - Password: `password`
+### 🐳 Docker Deployment (Recommended)
 
-### 📱 Flutter App Setup
+**Deploy with Docker Compose:**
+```bash
+# Build and start all services
+docker-compose up -d
 
-1. **Navigate to Flutter directory:**
-   ```bash
-   cd chatter
-   ```
+# Access the application
+# Backend: http://localhost:8003
+# Frontend: http://localhost:3000
+# Database Manager: http://localhost:8080
+```
 
-2. **Get dependencies:**
-   ```bash
-   flutter pub get
-   ```
+**Production deployment:**
+```bash
+./deploy-production.sh
+```
 
-3. **Run the app:**
-   ```bash
-   flutter run
-   ```
+### 📋 Manual Setup (Advanced)
+
+If you prefer manual setup or need to troubleshoot:
+
+#### Prerequisites
+- **PHP** (8.0+) - Backend runtime
+- **Composer** - PHP dependency manager  
+- **Node.js** (16+) - For building assets
+- **Flutter SDK** (3.0+) - Mobile app development
+- **Docker** (optional) - For containerized deployment
+
+#### Backend Setup
+```bash
+# Automated backend setup
+./setup-backend.sh
+
+# OR Manual setup:
+cd chatter_backend
+composer install --no-interaction --prefer-dist
+npm install
+cp .env.example .env
+# Edit .env to use SQLite: DB_CONNECTION=sqlite
+touch database/database.sqlite
+php artisan key:generate
+php artisan migrate --force
+php artisan db:seed
+php artisan serve --host=127.0.0.1 --port=8003
+```
+
+#### Frontend Setup
+```bash
+# Automated frontend setup  
+./setup-frontend.sh
+
+# OR Manual setup:
+cd chatter
+flutter pub get
+flutter build web --release
+flutter run  # For mobile development
+```
 
 ### 🔑 API Configuration
 
-The app uses API key authentication. Make sure your API calls include:
+The app uses API key authentication. Default configuration:
 ```
+Base URL: http://127.0.0.1:8003/api/
 Headers: {
   "Content-Type": "application/json",
   "APIKEY": "123"
 }
+```
+
+### 🧪 Testing & Health Checks
+
+```bash
+# Run comprehensive tests
+./run-tests.sh
+
+# Check application health
+./health-check.sh
+
+# Test API endpoints
+curl -H "APIKEY: 123" http://127.0.0.1:8003/api/fetchSetting
 ```
 
 ## 📦 Built APK Files
@@ -125,6 +169,55 @@ Pre-built APK files are available in `chatter/build/app/outputs/flutter-apk/`:
 - `app-release.apk` (338MB) - Production build
 
 ## 🌐 Deployment
+
+### 🚀 Quick Deployment Options
+
+**Docker Deployment (Recommended):**
+```bash
+# Development
+docker-compose up -d
+
+# Production
+./deploy-production.sh
+```
+
+**Traditional Deployment:**
+```bash
+# Backend only
+./setup-backend.sh && ./start-backend.sh
+
+# Full stack
+./setup.sh
+```
+
+### 🐳 Docker Services
+
+When using `docker-compose up -d`, the following services are available:
+
+- **Backend API**: http://localhost:8003/api/
+- **Admin Panel**: http://localhost:8003/admin (admin/password)  
+- **Frontend Web**: http://localhost:3000
+- **Database Manager**: http://localhost:8080
+
+### 🔧 Management Commands
+
+```bash
+# Health checks
+./health-check.sh
+
+# Run tests  
+./run-tests.sh
+
+# Start/stop services
+docker-compose up -d
+docker-compose down
+
+# View logs
+docker-compose logs -f [service]
+
+# Update deployment
+git pull && ./deploy-production.sh
+```
 
 ### AWS Deployment
 See `AWS_DEPLOYMENT_GUIDE.md` for detailed AWS deployment instructions.
