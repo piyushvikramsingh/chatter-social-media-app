@@ -111,12 +111,16 @@ if ! command -v docker &> /dev/null; then
 fi
 print_success "Docker detected"
 
-# Check Docker Compose
-if ! command -v docker-compose &> /dev/null; then
-    print_error "Docker Compose is not installed. Please install Docker Compose and try again."
+# Check Docker Compose (try both old and new syntax)
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+else
+    print_error "Docker Compose is not available. Please install Docker Compose and try again."
     exit 1
 fi
-print_success "Docker Compose detected"
+print_success "Docker Compose detected ($DOCKER_COMPOSE)"
 
 # Create logs directory
 mkdir -p logs
@@ -260,10 +264,10 @@ fi
 print_header "Deploying Application"
 
 print_status "Stopping existing containers..."
-docker-compose --env-file $DOCKER_ENV_FILE down 2>/dev/null || true
+$DOCKER_COMPOSE --env-file $DOCKER_ENV_FILE down 2>/dev/null || true
 
 print_status "Starting new containers..."
-docker-compose --env-file $DOCKER_ENV_FILE up -d
+$DOCKER_COMPOSE --env-file $DOCKER_ENV_FILE up -d
 
 # Wait for services to be ready
 print_status "Waiting for services to start..."
