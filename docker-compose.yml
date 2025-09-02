@@ -1,0 +1,108 @@
+# 🐳 Docker Compose for Complete Chatter Deployment
+version: '3.8'
+
+services:
+  # Laravel Backend
+  app:
+    build: .
+    container_name: chatter-backend
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./chatter_backend:/var/www/html
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - chatter-network
+    depends_on:
+      - database
+      - redis
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=database
+      - REDIS_HOST=redis
+
+  # Nginx Web Server
+  webserver:
+    image: nginx:alpine
+    container_name: chatter-webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./chatter_backend:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/ssl:/etc/nginx/ssl
+    networks:
+      - chatter-network
+    depends_on:
+      - app
+
+  # MySQL Database
+  database:
+    image: mysql:8.0
+    container_name: chatter-database
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: chatter_db
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_USER: chatter_user
+      MYSQL_PASSWORD: your_password
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./chatter_database.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - chatter-network
+    ports:
+      - "3306:3306"
+
+  # Redis for Caching & Sessions
+  redis:
+    image: redis:alpine
+    container_name: chatter-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - chatter-network
+
+  # Queue Worker
+  queue:
+    build: .
+    container_name: chatter-queue
+    restart: unless-stopped
+    command: php artisan queue:work --sleep=3 --tries=3
+    working_dir: /var/www/html
+    volumes:
+      - ./chatter_backend:/var/www/html
+    networks:
+      - chatter-network
+    depends_on:
+      - database
+      - redis
+
+  # Task Scheduler
+  scheduler:
+    build: .
+    container_name: chatter-scheduler
+    restart: unless-stopped
+    command: php artisan schedule:work
+    working_dir: /var/www/html
+    volumes:
+      - ./chatter_backend:/var/www/html
+    networks:
+      - chatter-network
+    depends_on:
+      - database
+      - redis
+
+# Persistent Volumes
+volumes:
+  db_data:
+    driver: local
+
+# Network Configuration
+networks:
+  chatter-network:
+    driver: bridge
