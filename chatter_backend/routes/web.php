@@ -26,8 +26,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [LoginController::class, 'login'])->name('/');
-Route::get('login', [LoginController::class, 'login'])->name('login');
-Route::post('login', [LoginController::class, 'checklogin'])->name('checklogin');
+Route::post('login', [LoginController::class, 'checklogin'])->middleware(['checkLogin'])->name('login');
 Route::get('index', [SettingsController::class, 'index'])->middleware(['checkLogin'])->name('index');
 Route::get('logout', [LoginController::class, 'logout'])->middleware(['checkLogin'])->name('logout');
 
